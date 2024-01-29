@@ -22,10 +22,10 @@ const DraggablePoint = ({
         pageX - parent.offsetLeft - point.offsetWidth / 2 + "px";
       point.style.top =
         pageY - parent.offsetTop - point.offsetHeight / 2 + "px";
-      console.log(point.style.left, point.style.top, parent.offsetLeft);
+      //console.log(point.style.left, point.style.top, parent.offsetLeft);
       //console.log(point.style.left, point.style.top);
       //console.log(ref.current.parentElement);
-      setCoordinate(() => ({ x: point.style.left, y: point.style.top }));
+      setCoordinate(() => point.style.left, point.style.top);
       onMouseDown(pageX, pageY);
     }
 
@@ -68,6 +68,12 @@ const DraggablePoint = ({
 };
 
 function App() {
+  const [coordinates, setCoordinates] = useState([
+    { x: 10, y: 10 },
+    { x: 100, y: 10 },
+    { x: 10, y: 100 },
+    { x: 100, y: 100 },
+  ]);
   return (
     <div className="flex flex-col sm:w-full md:w-7/12 lg:min-w-md mx-auto ">
       <div className="bg-white rounded-lg p-4 shadow-lg">
@@ -111,27 +117,47 @@ function App() {
               /> */}
               <DraggablePoint
                 id="point1"
-                x="10px"
-                y="10px"
-                //onMouseDown={(x, y) => console.log(x, y)}
+                x={coordinates[0].x + "px"}
+                y={coordinates[0].y + "px"}
+                onMouseDown={(x, y) => {
+                  const coordinatesCopy = [...coordinates];
+                  coordinatesCopy[0].x = x;
+                  coordinatesCopy[0].y = y;
+                  setCoordinates(coordinatesCopy);
+                }}
               />
               <DraggablePoint
                 id="point2"
-                x="100px"
-                y="0"
-                //onMouseDown={(x, y) => console.log(x, y)}
+                x={coordinates[1].x + "px"}
+                y={coordinates[1].y + "px"}
+                onMouseDown={(x, y) => {
+                  const coordinatesCopy = [...coordinates];
+                  coordinatesCopy[1].x = x;
+                  coordinatesCopy[1].y = y;
+                  setCoordinates(coordinatesCopy);
+                }}
               />
               <DraggablePoint
                 id="point3"
-                x="0px"
-                y="100px"
-                //onMouseDown={(x, y) => console.log(x, y)}
+                x={coordinates[2].x + "px"}
+                y={coordinates[2].y + "px"}
+                onMouseDown={(x, y) => {
+                  const coordinatesCopy = [...coordinates];
+                  coordinatesCopy[2].x = x;
+                  coordinatesCopy[2].y = y;
+                  setCoordinates(coordinatesCopy);
+                }}
               />
               <DraggablePoint
                 id="point4"
-                x="100px"
-                y="100px"
-                //onMouseDown={(x, y) => console.log(x, y)}
+                x={coordinates[3].x + "px"}
+                y={coordinates[3].y + "px"}
+                onMouseDown={(x, y) => {
+                  const coordinatesCopy = [...coordinates];
+                  coordinatesCopy[3].x = x;
+                  coordinatesCopy[3].y = y;
+                  setCoordinates(coordinatesCopy);
+                }}
               />
               {/* <DraggablePoint id="point2" />
               <DraggablePoint id="point3" />
@@ -156,26 +182,34 @@ function App() {
           </div>
           <div className="flex w-32 bg-gray-50 ">
             <div className="w-1/2  p-1  flex justify-center items-center ">
-              1
+              {coordinates[0].x}
             </div>
             <div className="w-1/2  p-1  flex justify-center items-center">
-              2
+              {coordinates[0].y}
             </div>
           </div>
           <div className="flex w-32 bg-gray-100 ">
             <div className="w-1/2  p-1  flex justify-center items-center ">
-              1
+              {coordinates[1].x}
             </div>
             <div className="w-1/2  p-1  flex justify-center items-center">
-              2
+              {coordinates[1].y}
             </div>
           </div>
           <div className="flex w-32 bg-gray-50 ">
             <div className="w-1/2  p-1  flex justify-center items-center ">
-              1
+              {coordinates[2].x}
             </div>
             <div className="w-1/2  p-1  flex justify-center items-center">
-              2
+              {coordinates[2].y}
+            </div>
+          </div>
+          <div className="flex w-32 bg-gray-50 ">
+            <div className="w-1/2  p-1  flex justify-center items-center ">
+              {coordinates[3].x}
+            </div>
+            <div className="w-1/2  p-1  flex justify-center items-center">
+              {coordinates[3].y}
             </div>
           </div>
         </div>
