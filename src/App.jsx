@@ -41,6 +41,10 @@ const DraggablePoint = ({
       document.removeEventListener("mousemove", onMouseMove);
       point.onmouseup = null;
     };
+    point.onmousedown = function () {
+      document.removeEventListener("mousemove", onMouseMove);
+      point.onmouseup = null;
+    };
   }, []);
 
   return (
@@ -65,7 +69,7 @@ const DraggablePoint = ({
 
 function App() {
   return (
-    <div className="flex flex-col  sm:w-full md:w-9/12 xl:min-w-lg mx-auto ">
+    <div className="flex flex-col sm:w-full md:w-7/12 lg:min-w-md mx-auto ">
       <div className="bg-white rounded-lg p-4 shadow-lg">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-lg font-semibold text-gray-700">
@@ -90,9 +94,21 @@ function App() {
         </div>
         <div className="flex flex-wrap -mx-2">
           <div className="w-full md:w-1/2 p-2">
-            <div className="bg-purple-100 rounded-lg p-4 h-48 flex justify-center items-center relative">
+            <div className="inline-block relative">
               {/* Placeholder for image */}
-              <span className="text-purple-500">Image Preview</span>
+              {/*               <span className="text-purple-500" style={{ zIndex: 1 }}>Image Preview</span>
+               */}
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chatlabai.jpg"
+                alt=""
+                srcset=""
+                className="w-80 select-none pointer-events-none"
+              />
+              {/* <img
+                src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chatlabai.jpg"
+                alt=""
+                style="display: block; width: 100%; height: auto;"
+              /> */}
               <DraggablePoint
                 id="point1"
                 x="10px"
