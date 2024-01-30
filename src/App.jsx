@@ -2,6 +2,38 @@ import React, { useState, useCallback, useRef } from "react";
 import axios from "axios";
 import "./App.css";
 
+const postData = async () => {
+  const data = {
+    url: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fe%2Fe2%2FA_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg&f=1&nofb=1&ipt=982488faf2b7b347563830f58c00e7503ef6c18b387d23ae5d7bad3ab658b215&ipo=images",
+    src_points: [
+      [1200, 520],
+      [2377, 317],
+      [1541, 2365],
+      [2765, 2149],
+    ],
+    width: 600,
+    height: 800,
+  };
+
+  const url = "https://us-east1-nth-micron-411415.cloudfunctions.net/function";
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: "Bearer your_token_here",
+  };
+
+  try {
+    const response = await axios.post(url, data, {
+      headers: headers,
+      responseType: "blob", // Important to handle the response as a Blob
+    });
+    const urlBlob = URL.createObjectURL(new Blob([response.data]));
+    return urlBlob;
+    //document.getElementById("yourImageId").src = urlBlob; // Assuming you have an img tag with id='yourImageId'
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const DraggablePoint = ({
   id,
   x = "0px",
@@ -24,12 +56,12 @@ const DraggablePoint = ({
         pageY - parent.offsetTop - point.offsetHeight / 2 + "px";
       //console.log(point.style.left, point.style.top, parent.offsetLeft);
       //console.log(point.style.left, point.style.top);
-      //console.log(ref.current.parentElement);
+      console.log(pageX);
       setCoordinate(() => point.style.left, point.style.top);
-      onMouseDown(pageX, pageY);
+      onMouseDown(point.style.left, point.style.top);
     }
 
-    moveAt(event.pageX, event.pageY);
+    //moveAt(event.pageX, event.pageY);
 
     function onMouseMove(event) {
       moveAt(event.pageX, event.pageY);
@@ -69,49 +101,21 @@ const DraggablePoint = ({
 
 function App() {
   const [coordinates, setCoordinates] = useState([
-    { x: 10, y: 10 },
+    { x: 0, y: 0 },
     { x: 100, y: 10 },
     { x: 10, y: 100 },
     { x: 100, y: 100 },
   ]);
   const [imageUrl, setImageUrl] = useState(null);
 
-  const postData = async () => {
-    var data = JSON.stringify({
-      url: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fe%2Fe2%2FA_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg&f=1&nofb=1&ipt=982488faf2b7b347563830f58c00e7503ef6c18b387d23ae5d7bad3ab658b215&ipo=images",
-      src_points: [
-        [1200, 520],
-        [2377, 317],
-        [1541, 2365],
-        [2765, 2149],
-      ],
-      width: 600,
-      height: 800,
-    });
-
-    var config = {
-      method: "post",
-      url: "https://us-east1-nth-micron-411415.cloudfunctions.net/function",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg1ZTU1MTA3NDY2YjdlMjk4MzYxOTljNThjNzU4MWY1YjkyM2JlNDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNjE4MTA0NzA4MDU0LTlyOXMxYzRhbGczNmVybGl1Y2hvOXQ1Mm4zMm42ZGdxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNjE4MTA0NzA4MDU0LTlyOXMxYzRhbGczNmVybGl1Y2hvOXQ1Mm4zMm42ZGdxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA0MTYwNzc3NjQ3MjUzNTg4MTM1IiwiZW1haWwiOiJkZW1vbm1hYXJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJaZDRIa2kyQ3JOZU1MdXhVNE5yZkd3IiwibmJmIjoxNzA2NTAyNTU2LCJpYXQiOjE3MDY1MDI4NTYsImV4cCI6MTcwNjUwNjQ1NiwianRpIjoiZGI2YWQ5NTE5NmU0ODQ0NDdkY2VlMjI4MGQyNjAyM2JlNGM5NzY5MCJ9.nQODj2mcHK9NXLjF1G4C8ICjjtiOZ9C_N6pW3bD6LtGp0QWuRqv37f8hFwSeiviQo4gpCnBcaiHklI6SdvA24ZzjAIMwv5s1O7jZ8ps8NgJDXibg4iiLWcEwvSjYh7Irsz_lC7wFV6IcgSN357S15ZkIzCARiOGA5pYQ2xqEhcM2_GuT4eyJQYE9WrmbaydwXtyJU62gRdmxNfD0OYmgCiUaqjR3ICB23oOPXbWL6e3PYVin5Pltf37sxnnsf7DQENdBasGSkHz4HPskeGf-ADDdZ4jUusLnj-CA6tKwY6xyhAHJqFPhTFlQTMK7eiFdjYTJ0ApLUnKItNtv2nw5FA",
-      },
-      data: data,
-    };
-
-    axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  const imageRequest = async () => {
+    const urlBlob = await postData();
+    setImageUrl(urlBlob);
   };
 
   return (
     <div className="flex flex-col sm:w-full md:w-7/12 lg:min-w-md mx-auto ">
-      <div className="bg-white rounded-lg p-4 shadow-lg">
+      <div className="bg-white rounded-lg p-4 shadow-lg sm:m-2">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-lg font-semibold text-gray-700">
             Image Wrapping
@@ -130,15 +134,15 @@ function App() {
           />
 
           <button
-            onClick={postData}
+            onClick={imageRequest}
             className="w-full sm:w-auto px-6 py-2 mx-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 focus:outline-none"
           >
             Process
           </button>
         </div>
-        <div className="flex flex-wrap -mx-2">
-          <div className="w-full md:w-1/2 p-2">
-            <div className="inline-block relative">
+        <div className="flex flex-wrap justify-between ">
+          <div className="h-full w-[45%] rounded-lg border-gray-300 border-2 p-2">
+            <div className=" inline-block relative">
               {/* Placeholder for image */}
               {/*               <span className="text-purple-500" style={{ zIndex: 1 }}>Image Preview</span>
                */}
@@ -202,10 +206,15 @@ function App() {
               <DraggablePoint id="point4" /> */}
             </div>
           </div>
-          <div className="w-full md:w-1/2 p-2">
-            <div className="bg-purple-100 rounded-lg p-4 h-48 flex justify-center items-center">
-              {/* Placeholder for image */}
-              {imageUrl && <img src={imageUrl} alt="Response Image" />}
+          <div className="w-[45%] rounded-lg border-gray-300 border-2 p-2">
+            <div className="w-full h-full inline-block relative">
+              {imageUrl && (
+                <img
+                  src={imageUrl}
+                  className=" absolute max-h-full max-w-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  alt="Response Image"
+                />
+              )}
             </div>
           </div>
         </div>
