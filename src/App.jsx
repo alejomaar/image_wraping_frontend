@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
 
@@ -34,34 +34,23 @@ const postData = async () => {
   }
 };
 
-const DraggablePoint = ({
-  id,
-  x = "0px",
-  y = "0px",
-  onMouseDown = () => {},
-}) => {
+const DraggablePoint = ({ id, x, y, onMouseDown }) => {
   const ref = useRef(null);
+
   const [coordinate, setCoordinate] = useState({ x: x, y: y });
 
   const handleMouseDown = useCallback((event) => {
     const point = ref.current;
     point.style.position = "absolute";
     point.style.zIndex = 1000;
-    const parent = ref.current.parentElement;
 
     function moveAt(pageX, pageY) {
-      point.style.left =
-        pageX - parent.offsetLeft - point.offsetWidth / 2 + "px";
-      point.style.top =
-        pageY - parent.offsetTop - point.offsetHeight / 2 + "px";
-      //console.log(point.style.left, point.style.top, parent.offsetLeft);
-      //console.log(point.style.left, point.style.top);
-      console.log(pageX);
+      point.style.left = pageX - point.offsetWidth / 2 + "px";
+      point.style.top = pageY - point.offsetHeight / 2 + "px";
+      console.log(point.style.left, point.style.top);
       setCoordinate(() => point.style.left, point.style.top);
       onMouseDown(point.style.left, point.style.top);
     }
-
-    //moveAt(event.pageX, event.pageY);
 
     function onMouseMove(event) {
       moveAt(event.pageX, event.pageY);
@@ -70,10 +59,6 @@ const DraggablePoint = ({
     document.addEventListener("mousemove", onMouseMove);
 
     point.onmouseup = function () {
-      document.removeEventListener("mousemove", onMouseMove);
-      point.onmouseup = null;
-    };
-    point.onmousedown = function () {
       document.removeEventListener("mousemove", onMouseMove);
       point.onmouseup = null;
     };
@@ -88,9 +73,9 @@ const DraggablePoint = ({
       style={{
         width: "10px",
         height: "10px",
-        backgroundColor: "red",
         left: coordinate.x,
         top: coordinate.y,
+        backgroundColor: "red",
         borderRadius: "50%",
         position: "absolute",
         cursor: "pointer",
@@ -101,17 +86,61 @@ const DraggablePoint = ({
 
 function App() {
   const [coordinates, setCoordinates] = useState([
-    { x: 0, y: 0 },
-    { x: 100, y: 10 },
-    { x: 10, y: 100 },
-    { x: 100, y: 100 },
+    {
+      x: 0,
+      y: 0,
+    },
+    {
+      x: 0,
+      y: 0,
+    },
+    {
+      x: 0,
+      y: 0,
+    },
+    {
+      x: 0,
+      y: 0,
+    },
   ]);
+  const [ready, setready] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
+  const ref = useRef(null);
 
   const imageRequest = async () => {
+    console.log(ref.current.offsetWidth, ref.current.offsetHeight);
+    return;
     const urlBlob = await postData();
     setImageUrl(urlBlob);
   };
+
+  useEffect(() => {
+    window.addEventListener(
+      "load",
+      function () {
+        setCoordinates([
+          {
+            x: ref.current.offsetLeft,
+            y: ref.current.offsetTop,
+          },
+          {
+            x: ref.current.offsetLeft + ref.current.offsetWidth,
+            y: ref.current.offsetTop,
+          },
+          {
+            x: ref.current.offsetLeft,
+            y: ref.current.offsetTop + ref.current.offsetHeight,
+          },
+          {
+            x: ref.current.offsetLeft + ref.current.offsetWidth,
+            y: ref.current.offsetTop + ref.current.offsetHeight,
+          },
+        ]);
+        setready(true);
+      },
+      false
+    );
+  }, []);
 
   return (
     <div className="flex flex-col sm:w-full md:w-7/12 lg:min-w-md mx-auto ">
@@ -142,68 +171,66 @@ function App() {
         </div>
         <div className="flex flex-wrap justify-between ">
           <div className="h-full w-[45%] rounded-lg border-gray-300 border-2 p-2">
-            <div className=" inline-block relative">
+            <div className=" inline-block">
               {/* Placeholder for image */}
               {/*               <span className="text-purple-500" style={{ zIndex: 1 }}>Image Preview</span>
                */}
               <img
+                ref={ref}
                 src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chatlabai.jpg"
                 alt=""
                 srcset=""
                 className="w-80 select-none pointer-events-none"
               />
-              {/* <img
-                src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chatlabai.jpg"
-                alt=""
-                style="display: block; width: 100%; height: auto;"
-              /> */}
-              <DraggablePoint
-                id="point1"
-                x={coordinates[0].x + "px"}
-                y={coordinates[0].y + "px"}
-                onMouseDown={(x, y) => {
-                  const coordinatesCopy = [...coordinates];
-                  coordinatesCopy[0].x = x;
-                  coordinatesCopy[0].y = y;
-                  setCoordinates(coordinatesCopy);
-                }}
-              />
-              <DraggablePoint
-                id="point2"
-                x={coordinates[1].x + "px"}
-                y={coordinates[1].y + "px"}
-                onMouseDown={(x, y) => {
-                  const coordinatesCopy = [...coordinates];
-                  coordinatesCopy[1].x = x;
-                  coordinatesCopy[1].y = y;
-                  setCoordinates(coordinatesCopy);
-                }}
-              />
-              <DraggablePoint
-                id="point3"
-                x={coordinates[2].x + "px"}
-                y={coordinates[2].y + "px"}
-                onMouseDown={(x, y) => {
-                  const coordinatesCopy = [...coordinates];
-                  coordinatesCopy[2].x = x;
-                  coordinatesCopy[2].y = y;
-                  setCoordinates(coordinatesCopy);
-                }}
-              />
-              <DraggablePoint
-                id="point4"
-                x={coordinates[3].x + "px"}
-                y={coordinates[3].y + "px"}
-                onMouseDown={(x, y) => {
-                  const coordinatesCopy = [...coordinates];
-                  coordinatesCopy[3].x = x;
-                  coordinatesCopy[3].y = y;
-                  setCoordinates(coordinatesCopy);
-                }}
-              />
-              {/* <DraggablePoint id="point2" />
-              <DraggablePoint id="point3" />
-              <DraggablePoint id="point4" /> */}
+
+              {ready && (
+                <>
+                  <DraggablePoint
+                    id="point1"
+                    x={coordinates[0].x + "px"}
+                    y={coordinates[0].y + "px"}
+                    onMouseDown={(x, y) => {
+                      const coordinatesCopy = [...coordinates];
+                      coordinatesCopy[0].x = x;
+                      coordinatesCopy[0].y = y;
+                      setCoordinates(coordinatesCopy);
+                    }}
+                  />
+                  <DraggablePoint
+                    id="point2"
+                    x={coordinates[1].x + "px"}
+                    y={coordinates[1].y + "px"}
+                    onMouseDown={(x, y) => {
+                      const coordinatesCopy = [...coordinates];
+                      coordinatesCopy[1].x = x;
+                      coordinatesCopy[1].y = y;
+                      setCoordinates(coordinatesCopy);
+                    }}
+                  />
+                  <DraggablePoint
+                    id="point3"
+                    x={coordinates[2].x + "px"}
+                    y={coordinates[2].y + "px"}
+                    onMouseDown={(x, y) => {
+                      const coordinatesCopy = [...coordinates];
+                      coordinatesCopy[2].x = x;
+                      coordinatesCopy[2].y = y;
+                      setCoordinates(coordinatesCopy);
+                    }}
+                  />
+                  <DraggablePoint
+                    id="point4"
+                    x={coordinates[3].x + "px"}
+                    y={coordinates[3].y + "px"}
+                    onMouseDown={(x, y) => {
+                      const coordinatesCopy = [...coordinates];
+                      coordinatesCopy[3].x = x;
+                      coordinatesCopy[3].y = y;
+                      setCoordinates(coordinatesCopy);
+                    }}
+                  />
+                </>
+              )}
             </div>
           </div>
           <div className="w-[45%] rounded-lg border-gray-300 border-2 p-2">
@@ -218,6 +245,7 @@ function App() {
             </div>
           </div>
         </div>
+
         <div className="flex flex-col  justify-between rounded-lg w-32 pt-1 mx-auto">
           <div className="flex w-32 bg-purple-500">
             <div className="w-1/2 text-white p-1  flex justify-center items-center">
