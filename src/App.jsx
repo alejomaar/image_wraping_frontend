@@ -49,7 +49,7 @@ const DraggablePoint = ({ id, x, y, onMouseDown }) => {
       point.style.top = pageY - point.offsetHeight / 2 + "px";
       console.log(point.style.left, point.style.top);
       setCoordinate(() => point.style.left, point.style.top);
-      onMouseDown(point.style.left, point.style.top);
+      onMouseDown( pageX - point.offsetWidth / 2, pageY - point.offsetHeight / 2);
     }
 
     function onMouseMove(event) {
@@ -108,8 +108,14 @@ function App() {
   const ref = useRef(null);
 
   const imageRequest = async () => {
-    console.log(ref.current.offsetWidth, ref.current.offsetHeight);
-    return;
+    console.log(ref.current.offsetWidth, ref.current.offsetLeft);
+
+    const normCoordinates = coordinates.map((coord) => [
+      (coord.x - ref.current.offsetLeft) / ref.current.offsetWidth,
+      (coord.y - ref.current.offsetTop) / ref.current.offsetHeight,
+    ]);
+    console.log(normCoordinates);
+    return 
     const urlBlob = await postData();
     setImageUrl(urlBlob);
   };
