@@ -43,12 +43,10 @@ const DraggablePoint = ({ id, x, y, onMouseDown }) => {
     function moveAt(pageX, pageY) {
       point.style.left = pageX - point.offsetWidth / 2 + "px";
       point.style.top = pageY - point.offsetHeight / 2 + "px";
-      console.log(point.style.left, point.style.top);
+      //console.log("i:", pageX, point.offsetWidth);
+
       setCoordinate(() => point.style.left, point.style.top);
-      onMouseDown(
-        pageX - point.offsetWidth / 2,
-        pageY - point.offsetHeight / 2
-      );
+      onMouseDown(pageX, pageY);
     }
 
     function onMouseMove(event) {
@@ -70,17 +68,30 @@ const DraggablePoint = ({ id, x, y, onMouseDown }) => {
       className="draggable-point"
       onMouseDown={handleMouseDown}
       style={{
-        width: "8px",
-        height: "8px",
+        width: "20px",
+        height: "20px",
         left: coordinate.x,
         top: coordinate.y,
-        backgroundColor: "#f77373b8",
+        backgroundColor: "#f7a5a566",
         borderRadius: "50%",
         position: "absolute",
         cursor: "pointer",
-        border: "1px solid white",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
-    />
+    >
+      <div
+        style={{
+          width: "3px",
+          height: "3px",
+          backgroundColor: "white",
+          borderRadius: "50%",
+          position: "absolute",
+          cursor: "pointer",
+        }}
+      ></div>
+    </div>
   );
 };
 
