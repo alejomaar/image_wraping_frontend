@@ -2,15 +2,10 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
 
-const postData = async () => {
+const postData = async (src_points) => {
   const data = {
     url: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fe%2Fe2%2FA_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg&f=1&nofb=1&ipt=982488faf2b7b347563830f58c00e7503ef6c18b387d23ae5d7bad3ab658b215&ipo=images",
-    src_points: [
-      [1200, 520],
-      [2377, 317],
-      [1541, 2365],
-      [2765, 2149],
-    ],
+    src_points: src_points,
     width: 600,
     height: 800,
   };
@@ -18,7 +13,8 @@ const postData = async () => {
   const url = "https://us-east1-nth-micron-411415.cloudfunctions.net/function";
   const headers = {
     "Content-Type": "application/json",
-    Authorization: "Bearer your_token_here",
+    Authorization:
+      "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg1ZTU1MTA3NDY2YjdlMjk4MzYxOTljNThjNzU4MWY1YjkyM2JlNDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNjE4MTA0NzA4MDU0LTlyOXMxYzRhbGczNmVybGl1Y2hvOXQ1Mm4zMm42ZGdxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNjE4MTA0NzA4MDU0LTlyOXMxYzRhbGczNmVybGl1Y2hvOXQ1Mm4zMm42ZGdxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA0MTYwNzc3NjQ3MjUzNTg4MTM1IiwiZW1haWwiOiJkZW1vbm1hYXJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJoRG9jMlJkNjFYYzZIWWN6VXJiOEJBIiwibmJmIjoxNzA2NDk4Mzk4LCJpYXQiOjE3MDY0OTg2OTgsImV4cCI6MTcwNjUwMjI5OCwianRpIjoiNzczNDdmMWUzMmU5ODVkM2VkYTA2MzM1YjZiMmU1YmI4NDdiNTQ1MSJ9.vyPbMvMAnPUNwlUpPoM1BORv9tpac5mfW_4mNFcSVrVrwcTSsM6APukKwqpYNuonWCQt3u9cPjK7beb6aFbiL9NvP-SgzjcxRFSEm9LRC0cnOvr4U9EsWYuu4dMjgUmh-Cjdg2VDMbvyJIrQMywaLLw9ckIjCuEJNwHmmv6lXjeBpSIiPWPpy3G_bkNyajEB813-ll2DugvfeXo49cQalmM9nvGkSRNkQBZT2GrFXSuOSOKRmjKUJJadMReCITwhomFHm4uE2RBsyQLnk8sGQw_ZDFDHQ3gb0a5Z1_8q6LbJVG8VtsVmXNYhUQ-TsjxyxqA8PKe4xq82ALPvoLAfEQ",
   };
 
   try {
@@ -49,7 +45,10 @@ const DraggablePoint = ({ id, x, y, onMouseDown }) => {
       point.style.top = pageY - point.offsetHeight / 2 + "px";
       console.log(point.style.left, point.style.top);
       setCoordinate(() => point.style.left, point.style.top);
-      onMouseDown( pageX - point.offsetWidth / 2, pageY - point.offsetHeight / 2);
+      onMouseDown(
+        pageX - point.offsetWidth / 2,
+        pageY - point.offsetHeight / 2
+      );
     }
 
     function onMouseMove(event) {
@@ -71,14 +70,15 @@ const DraggablePoint = ({ id, x, y, onMouseDown }) => {
       className="draggable-point"
       onMouseDown={handleMouseDown}
       style={{
-        width: "10px",
-        height: "10px",
+        width: "8px",
+        height: "8px",
         left: coordinate.x,
         top: coordinate.y,
-        backgroundColor: "red",
+        backgroundColor: "#f77373b8",
         borderRadius: "50%",
         position: "absolute",
         cursor: "pointer",
+        border: "1px solid white",
       }}
     />
   );
@@ -114,9 +114,8 @@ function App() {
       (coord.x - ref.current.offsetLeft) / ref.current.offsetWidth,
       (coord.y - ref.current.offsetTop) / ref.current.offsetHeight,
     ]);
-    console.log(normCoordinates);
-    return 
-    const urlBlob = await postData();
+    //console.log(normCoordinates);
+    const urlBlob = await postData(normCoordinates);
     setImageUrl(urlBlob);
   };
 
@@ -149,7 +148,7 @@ function App() {
   }, []);
 
   return (
-    <div className="flex flex-col sm:w-full md:w-7/12 lg:min-w-md mx-auto ">
+    <div className="flex flex-col sm:w-full md:w-9/12 lg:min-w-md mx-auto ">
       <div className="bg-white rounded-lg p-4 shadow-lg sm:m-2">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-lg font-semibold text-gray-700">
@@ -183,10 +182,10 @@ function App() {
                */}
               <img
                 ref={ref}
-                src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chatlabai.jpg"
+                src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fe%2Fe2%2FA_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg&f=1&nofb=1&ipt=982488faf2b7b347563830f58c00e7503ef6c18b387d23ae5d7bad3ab658b215&ipo=images"
                 alt=""
                 srcset=""
-                className="w-80 select-none pointer-events-none"
+                className="w-96 select-none pointer-events-none"
               />
 
               {ready && (
@@ -252,7 +251,7 @@ function App() {
           </div>
         </div>
 
-        <div className="flex flex-col  justify-between rounded-lg w-32 pt-1 mx-auto">
+        {/* <div className="flex flex-col  justify-between rounded-lg w-32 pt-1 mx-auto">
           <div className="flex w-32 bg-purple-500">
             <div className="w-1/2 text-white p-1  flex justify-center items-center">
               x
@@ -293,7 +292,7 @@ function App() {
               {coordinates[3].y}
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
