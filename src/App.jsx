@@ -102,11 +102,9 @@ function App() {
   const [reRender, setReRender] = useState(0);
 
   const imageRequest = async () => {
-    console.log(ref.current.offsetWidth, ref.current.offsetLeft);
-
     const normCoordinates = coordinates.map((coord) => [
-      (coord.x - ref.current.offsetLeft) / ref.current.offsetWidth,
-      (coord.y - ref.current.offsetTop) / ref.current.offsetHeight,
+      (coord.x - imgRef.current.offsetLeft) / imgRef.current.offsetWidth,
+      (coord.y - imgRef.current.offsetTop) / imgRef.current.offsetHeight,
     ]);
     //console.log(normCoordinates);
     const urlBlob = await postData(normCoordinates);
@@ -136,7 +134,7 @@ function App() {
     <div className="flex flex-col sm:w-full md:w-9/12 lg:min-w-md mx-auto ">
       <div className="bg-white rounded-lg p-4 shadow-lg sm:m-2">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-lg font-semibold text-gray-700">
+          <h1 className="text-4xl font-semibold text-gray-700 mb-5 mx-auto">
             Image Wrapping
           </h1>
         </div>
@@ -160,11 +158,11 @@ function App() {
           </button>
         </div>
         <div className="flex flex-wrap justify-between ">
-          <div className="h-full w-[45%] rounded-lg border-gray-300 border-2 p-2">
+          <div
+            style={{ backgroundColor: "#f9fafb" }}
+            className="h-full w-[48%] rounded-lg border-gray-300 border-2 p-2"
+          >
             <div className=" inline-block">
-              {/* Placeholder for image */}
-              {/*               <span className="text-purple-500" style={{ zIndex: 1 }}>Image Preview</span>
-               */}
               <img
                 ref={imgRef}
                 src="https://st4.depositphotos.com/22295624/24375/i/600/depositphotos_243751562-stock-photo-3d-soccer-football-concept.jpg"
@@ -178,16 +176,20 @@ function App() {
                   id={`point${index}`}
                   {...coord}
                   onMouseDown={(x, y) => {
+                    console.log(x, y);
                     const coordinatesCopy = [...coordinates];
-                    coordinatesCopy[0].x = x;
-                    coordinatesCopy[0].y = y;
+                    coordinatesCopy[index].x = x;
+                    coordinatesCopy[index].y = y;
                     setCoordinates(coordinatesCopy);
                   }}
                 />
               ))}
             </div>
           </div>
-          <div className="w-[45%] rounded-lg border-gray-300 border-2 p-2">
+          <div
+            style={{ backgroundColor: "#f9fafb" }}
+            className="w-[48%] rounded-lg border-gray-300 border-2 p-2 "
+          >
             <div className="w-full h-full inline-block relative">
               {imageUrl && (
                 <img
@@ -200,30 +202,65 @@ function App() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-between rounded-lg w-32 pt-1 mx-auto">
-          <div className="flex w-32 bg-purple-500">
-            <div className="w-1/2 text-white p-1 flex justify-center items-center">
-              x
+        <div className="flex my-3">
+          <h3 className="italic ">Points</h3>
+        </div>
+        <div className="flex flex-col justify-between rounded-lg  pt-1 mx-auto">
+          <div className="rounded-tl-md rounded-tr-md flex max-w-lg flex  text-sm ">
+            <div className="font-bold rounded-tl-md outline-1 outline outline-gray-300 flex-[1]  p-1 flex justify-center items-center"></div>
+            <div className="font-bold outline-1 outline outline-gray-300 flex-[1]  p-1 flex justify-center items-center">
+              top left
             </div>
-            <div className="w-1/2 text-white p-1 flex justify-center items-center">
-              y
+            <div className="font-bold outline-1 outline outline-gray-300 flex-[1]  p-1 flex justify-center items-center">
+              top right
+            </div>
+            <div className="font-bold outline-1 outline outline-gray-300 flex-[1]  p-1 flex justify-center items-center">
+              bottom left
+            </div>
+            <div className="font-bold rounded-tr-md outline-1 outline outline-gray-300 flex-[1]  p-1 flex justify-center items-center">
+              bottom right
             </div>
           </div>
-          {coordinates.map((coord, index) => (
-            <div
-              key={index}
-              className={`flex w-32 ${
-                index % 2 === 0 ? "bg-gray-50" : "bg-gray-100"
-              }`}
-            >
-              <div className="w-1/2 p-1 flex justify-center items-center">
-                {coord.x.toFixed(0)}
-              </div>
-              <div className="w-1/2 p-1 flex justify-center items-center">
-                {coord.y.toFixed(0)}
-              </div>
+          <div
+            style={{ backgroundColor: "#f9fafb" }}
+            className="flex max-w-lg flex"
+          >
+            <div className="font-bold outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              x
             </div>
-          ))}
+            <div className="outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              1
+            </div>
+            <div className="outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              2
+            </div>
+            <div className="outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              3
+            </div>
+            <div className="outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              4
+            </div>
+          </div>
+          <div
+            style={{ backgroundColor: "#f9fafb" }}
+            className="flex max-w-lg flex"
+          >
+            <div className="font-bold outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              y
+            </div>
+            <div className="outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              1
+            </div>
+            <div className="outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              2
+            </div>
+            <div className="outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              3
+            </div>
+            <div className="outline-1 outline outline-gray-300 flex-[1] p-1 flex justify-center items-center">
+              4
+            </div>
+          </div>
         </div>
       </div>
     </div>
