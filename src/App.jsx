@@ -4,10 +4,10 @@ import "./App.css";
 
 const postData = async (src_points) => {
   const data = {
-    url: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fe%2Fe2%2FA_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg&f=1&nofb=1&ipt=982488faf2b7b347563830f58c00e7503ef6c18b387d23ae5d7bad3ab658b215&ipo=images",
+    url: "https://st4.depositphotos.com/22295624/24375/i/600/depositphotos_243751562-stock-photo-3d-soccer-football-concept.jpg",
     src_points: src_points,
-    width: 600,
-    height: 800,
+    width: 900,
+    height: 600,
   };
 
   const url = "https://us-east1-nth-micron-411415.cloudfunctions.net/function";
@@ -96,27 +96,10 @@ const DraggablePoint = ({ id, x, y, onMouseDown }) => {
 };
 
 function App() {
-  const [coordinates, setCoordinates] = useState([
-    {
-      x: 0,
-      y: 0,
-    },
-    {
-      x: 0,
-      y: 0,
-    },
-    {
-      x: 0,
-      y: 0,
-    },
-    {
-      x: 0,
-      y: 0,
-    },
-  ]);
-  const [ready, setready] = useState(false);
+  const [coordinates, setCoordinates] = useState(Array(4).fill({ x: 0, y: 0 }));
   const [imageUrl, setImageUrl] = useState(null);
-  const ref = useRef(null);
+  const imgRef = useRef(null);
+  const [reRender, setReRender] = useState(0);
 
   const imageRequest = async () => {
     console.log(ref.current.offsetWidth, ref.current.offsetLeft);
@@ -131,31 +114,22 @@ function App() {
   };
 
   useEffect(() => {
-    window.addEventListener(
-      "load",
-      function () {
-        setCoordinates([
-          {
-            x: ref.current.offsetLeft,
-            y: ref.current.offsetTop,
-          },
-          {
-            x: ref.current.offsetLeft + ref.current.offsetWidth,
-            y: ref.current.offsetTop,
-          },
-          {
-            x: ref.current.offsetLeft,
-            y: ref.current.offsetTop + ref.current.offsetHeight,
-          },
-          {
-            x: ref.current.offsetLeft + ref.current.offsetWidth,
-            y: ref.current.offsetTop + ref.current.offsetHeight,
-          },
-        ]);
-        setready(true);
-      },
-      false
-    );
+    const updateInitialCoordinates = () => {
+      const { offsetLeft, offsetTop, offsetWidth, offsetHeight } =
+        imgRef.current;
+      setCoordinates([
+        { x: offsetLeft, y: offsetTop },
+        { x: offsetLeft + offsetWidth, y: offsetTop },
+        { x: offsetLeft, y: offsetTop + offsetHeight },
+        { x: offsetLeft + offsetWidth, y: offsetTop + offsetHeight },
+      ]);
+      setReRender((x) => x + 1);
+    };
+
+    // Ensure the image is loaded before setting coordinates
+    imgRef.current.addEventListener("load", updateInitialCoordinates);
+    return () =>
+      imgRef.current.removeEventListener("load", updateInitialCoordinates);
   }, []);
 
   return (
@@ -192,61 +166,25 @@ function App() {
               {/*               <span className="text-purple-500" style={{ zIndex: 1 }}>Image Preview</span>
                */}
               <img
-                ref={ref}
-                src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fe%2Fe2%2FA_studio_image_of_a_hand_of_playing_cards._MOD_45148377.jpg&f=1&nofb=1&ipt=982488faf2b7b347563830f58c00e7503ef6c18b387d23ae5d7bad3ab658b215&ipo=images"
-                alt=""
+                ref={imgRef}
+                src="https://st4.depositphotos.com/22295624/24375/i/600/depositphotos_243751562-stock-photo-3d-soccer-football-concept.jpg"
                 srcset=""
                 className="w-96 select-none pointer-events-none"
               />
 
-              {ready && (
-                <>
-                  <DraggablePoint
-                    id="point1"
-                    x={coordinates[0].x + "px"}
-                    y={coordinates[0].y + "px"}
-                    onMouseDown={(x, y) => {
-                      const coordinatesCopy = [...coordinates];
-                      coordinatesCopy[0].x = x;
-                      coordinatesCopy[0].y = y;
-                      setCoordinates(coordinatesCopy);
-                    }}
-                  />
-                  <DraggablePoint
-                    id="point2"
-                    x={coordinates[1].x + "px"}
-                    y={coordinates[1].y + "px"}
-                    onMouseDown={(x, y) => {
-                      const coordinatesCopy = [...coordinates];
-                      coordinatesCopy[1].x = x;
-                      coordinatesCopy[1].y = y;
-                      setCoordinates(coordinatesCopy);
-                    }}
-                  />
-                  <DraggablePoint
-                    id="point3"
-                    x={coordinates[2].x + "px"}
-                    y={coordinates[2].y + "px"}
-                    onMouseDown={(x, y) => {
-                      const coordinatesCopy = [...coordinates];
-                      coordinatesCopy[2].x = x;
-                      coordinatesCopy[2].y = y;
-                      setCoordinates(coordinatesCopy);
-                    }}
-                  />
-                  <DraggablePoint
-                    id="point4"
-                    x={coordinates[3].x + "px"}
-                    y={coordinates[3].y + "px"}
-                    onMouseDown={(x, y) => {
-                      const coordinatesCopy = [...coordinates];
-                      coordinatesCopy[3].x = x;
-                      coordinatesCopy[3].y = y;
-                      setCoordinates(coordinatesCopy);
-                    }}
-                  />
-                </>
-              )}
+              {coordinates.map((coord, index) => (
+                <DraggablePoint
+                  key={`point${index}${reRender}`}
+                  id={`point${index}`}
+                  {...coord}
+                  onMouseDown={(x, y) => {
+                    const coordinatesCopy = [...coordinates];
+                    coordinatesCopy[0].x = x;
+                    coordinatesCopy[0].y = y;
+                    setCoordinates(coordinatesCopy);
+                  }}
+                />
+              ))}
             </div>
           </div>
           <div className="w-[45%] rounded-lg border-gray-300 border-2 p-2">
@@ -262,48 +200,31 @@ function App() {
           </div>
         </div>
 
-        {/* <div className="flex flex-col  justify-between rounded-lg w-32 pt-1 mx-auto">
+        <div className="flex flex-col justify-between rounded-lg w-32 pt-1 mx-auto">
           <div className="flex w-32 bg-purple-500">
-            <div className="w-1/2 text-white p-1  flex justify-center items-center">
+            <div className="w-1/2 text-white p-1 flex justify-center items-center">
               x
             </div>
-            <div className="w-1/2 text-white p-1  flex justify-center items-center">
+            <div className="w-1/2 text-white p-1 flex justify-center items-center">
               y
             </div>
           </div>
-          <div className="flex w-32 bg-gray-50 ">
-            <div className="w-1/2  p-1  flex justify-center items-center ">
-              {coordinates[0].x}
+          {coordinates.map((coord, index) => (
+            <div
+              key={index}
+              className={`flex w-32 ${
+                index % 2 === 0 ? "bg-gray-50" : "bg-gray-100"
+              }`}
+            >
+              <div className="w-1/2 p-1 flex justify-center items-center">
+                {coord.x.toFixed(0)}
+              </div>
+              <div className="w-1/2 p-1 flex justify-center items-center">
+                {coord.y.toFixed(0)}
+              </div>
             </div>
-            <div className="w-1/2  p-1  flex justify-center items-center">
-              {coordinates[0].y}
-            </div>
-          </div>
-          <div className="flex w-32 bg-gray-100 ">
-            <div className="w-1/2  p-1  flex justify-center items-center ">
-              {coordinates[1].x}
-            </div>
-            <div className="w-1/2  p-1  flex justify-center items-center">
-              {coordinates[1].y}
-            </div>
-          </div>
-          <div className="flex w-32 bg-gray-50 ">
-            <div className="w-1/2  p-1  flex justify-center items-center ">
-              {coordinates[2].x}
-            </div>
-            <div className="w-1/2  p-1  flex justify-center items-center">
-              {coordinates[2].y}
-            </div>
-          </div>
-          <div className="flex w-32 bg-gray-50 ">
-            <div className="w-1/2  p-1  flex justify-center items-center ">
-              {coordinates[3].x}
-            </div>
-            <div className="w-1/2  p-1  flex justify-center items-center">
-              {coordinates[3].y}
-            </div>
-          </div>
-        </div> */}
+          ))}
+        </div>
       </div>
     </div>
   );
